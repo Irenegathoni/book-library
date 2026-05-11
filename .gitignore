@@ -1,0 +1,17 @@
+# Virtual environment
+venv/
+
+# Environment variables - NEVER push this
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# VS Code settings
+.vscode/
+
+# Alembic cache
+alembic/__pycache__/
+
