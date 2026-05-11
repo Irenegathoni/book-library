@@ -34,7 +34,7 @@ def register(user_data:user_registration,session:Session=Depends(get_session)):
   
 #USER LOGIN
 
-@router.post("/login",status_code=status.HTTP_201_CREATED)
+@router.post("/login",status_code=status.HTTP_200_OK)
 def login(login_data:user_login,session:Session=Depends(get_session)):
     user=session.exec(select(User).where(User.email==login_data.email)).first()
 
