@@ -2,10 +2,10 @@ from fastapi import APIRouter,Depends,HTTPException,status
 from sqlmodel import Session,select
 from database.Session import get_session # from the session generator
 from models.model import User # from the User Model
-from services.security import hash_password,verify_password,create_access_token
+from services.security import hash_password,verify_password,create_access_token,get_current_user
 from schemas.user_schema import user_registration,user_login
-
-
+from jose import JWTError, jwt
+from config import settings
 router=APIRouter(prefix="/auth",tags=["Auth"])
 @router.post ("/register",status_code=status.HTTP_201_CREATED)
 #CHECKING FOR EXISTING USER
@@ -43,6 +43,13 @@ def login(login_data:user_login,session:Session=Depends(get_session)):
     if not verify_password(login_data.password,user.hashed_password):
         raise HTTPException(status_code=400,detail="Incorrect Password")
     
+        
     token=create_access_token(data={"sub":str(user.id)})
 
     return{"access token":token,"token_type":"bearer"}
+
+
+#creating a "ME" function
+@router.get("/me")
+def get_me(current_user:str=Depends(get_current_user),session:Session=Depends(get_session)):
+    return current_user
