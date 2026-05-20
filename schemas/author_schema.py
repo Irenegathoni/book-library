@@ -21,3 +21,6 @@ class AuthorResponse(BaseModel):
      
     #this tells pydantic to read data from SQLModel objects instead of expecting a plain dictionary
     model_config= {"from_attributes":True}
+
+class AuthorUpdate(BaseModel):
+    name:str    
