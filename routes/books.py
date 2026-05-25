@@ -1,10 +1,10 @@
-from models.model import Book
+from models.model import Book,Author
 from sqlmodel import Session,select
 from fastapi import HTTPException,Depends,status,APIRouter
 from database.Session import get_session
 from services.security import get_current_user
-from schemas.book_schema import BookCreate,BookResponse,BookUpdate
-from typing import List
+from schemas.book_schema import BookCreate,BookResponse,BookUpdate,BookSearch
+from typing import List,Optional
 import uuid
 router=APIRouter(prefix="/books", tags=["Book"])
 #creating the book router
@@ -28,6 +28,22 @@ def create_book(book_data:BookCreate,session:Session=Depends(get_session),curren
 def get_book(session:Session=Depends(get_session),current_user:Book=Depends(get_current_user)):
     books=session.exec(select (Book)).all()
     return books
+
+@router.get("/search",status_code=status.HTTP_200_OK,response_model=List[BookResponse])
+def search_books(
+    title: Optional[str] = None,author_name: Optional[str] = None,session: Session = Depends(get_session),current_user = Depends(get_current_user)):
+    query = select(Book)
+
+    if title is not None:
+        query = query.where(Book.title.contains(title))
+
+    if author_name is not None:
+        authors = session.exec(select(Author).where(Author.name.contains(author_name))).all()
+        author_ids = [author.id for author in authors]
+        query = query.where(Book.author_id.in_(author_ids))
+
+    books = session.exec(query).all()  
+    return books                       
 
 #reading book by id
 @router.get("/{id}",status_code=status.HTTP_200_OK,response_model=BookResponse)
