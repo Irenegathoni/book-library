@@ -68,6 +68,9 @@ def update_book_by_id(id:uuid.UUID,book_data:BookUpdate,session:Session=Depends(
    
     if book_data.image_url is not None:
         book.image_url= book_data.image_url
+
+    if book_data.genre is not None:
+        book.genre= book_data.genre    
     
     if book_data.description is not None:
         book.description = book_data.description
