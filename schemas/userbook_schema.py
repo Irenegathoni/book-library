@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from enum import Enum
 import uuid
-from typing import List
+from typing import List,Optional
 
 class ReadingStatus(str,Enum):
     reading="reading"
@@ -19,3 +19,9 @@ class UserBookResponse(BaseModel):
     author_name:str
     status:ReadingStatus
     model_config={"from_attributes":True}
+
+class UserBookUpdate(BaseModel):
+    book_title:Optional[str]=None
+    book_genre:Optional[str]=None
+    author_name:Optional[str]=None
+    status:List[ReadingStatus]=[]
