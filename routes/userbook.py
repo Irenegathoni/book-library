@@ -52,6 +52,8 @@ def get_userbooks(session:Session=Depends(get_session),current_user:User=Depends
             status=userbook.status,
             book_title=book.title if book else "Unknown",
             book_genre=book.genre if book else "Unknown",
+            book_description=book.description if book else "Unknown",
+            book_year=book.year if book else 0,
             author_name=author.name if author else "Unknown"
         ))
     return response
