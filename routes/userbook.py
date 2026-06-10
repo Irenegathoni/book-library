@@ -57,7 +57,7 @@ def get_userbooks(session:Session=Depends(get_session),current_user:User=Depends
     return response
 
 @router.patch("/{id}",status_code=status.HTTP_200_OK,response_model=UserBookResponse)
-def update_userbook(userbook_data:UserBookUpdate,session:Session=Depends(get_session),current_user:User=Depends(get_current_user)):
+def update_userbook(id:uuid.UUID,userbook_data:UserBookUpdate,session:Session=Depends(get_session),current_user:User=Depends(get_current_user)):
     userbook=session.exec(select(UserBook).where(UserBook.id==id,UserBook.user_id==current_user.id)).first()
     if not userbook:
         raise HTTPException(status_code=404,detail="UserBook not found.")
@@ -80,3 +80,21 @@ def update_userbook(userbook_data:UserBookUpdate,session:Session=Depends(get_ses
         author_name=author.name if author else "Unknown"
     )
    
+#reading my book list
+@router.get("/mybooks",status_code=status.HTTP_200_OK,response_model=List[UserBookResponse])
+def get_mybooks(session:Session=Depends(get_session),current_user:User=Depends(get_current_user)):
+    userbooks=session.exec(select(UserBook).where(UserBook.user_id==current_user.id)).all()
+    response=[]
+    for userbook in userbooks:
+        book=session.exec(select(Book).where(Book.id==userbook.book_id)).first()
+        author=session.exec(select(Author).where(Author.id==book.author_id)).first() if book else None
+        response.append(UserBookResponse(
+            id=userbook.id,
+            status=userbook.status,
+            book_title=book.title if book else "Unknown",
+            book_genre=book.genre if book else "Unknown",
+            book_description=book.description if book else "Unknown",
+            book_year=book.year if book else 0,
+            author_name=author.name if author else "Unknown"
+        ))
+    return response

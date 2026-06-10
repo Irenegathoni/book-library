@@ -16,12 +16,12 @@ class UserBookResponse(BaseModel):
     id:uuid.UUID
     book_title:str
     book_genre:str
+    book_description:str
+    book_year:int
     author_name:str
     status:ReadingStatus
     model_config={"from_attributes":True}
 
 class UserBookUpdate(BaseModel):
-    book_title:Optional[str]=None
-    book_genre:Optional[str]=None
-    author_name:Optional[str]=None
-    status:List[ReadingStatus]=[]
+    status:Optional[ReadingStatus]=None
+ 
